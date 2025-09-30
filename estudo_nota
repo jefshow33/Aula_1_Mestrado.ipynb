@@ -1,0 +1,30 @@
+# Importação de dados
+import pandas as pd
+df = pd.read_excel('dados_estudo_nota.xlsx')
+df
+
+# Separação de dados de entrada e de saí
+X = df[['horas_estudo']] 
+y = df['nota'] 
+
+# Criação e treino do modelo:
+from sklearn.linear_model import LinearRegression
+modelo=LinearRegression(fit_intercept=True)
+modelo.fit(X,y)
+#calculo do "a^" e do "b^":
+a=modelo.coef_[0]
+b=modelo.intercept_
+print(f'a={a}')
+print(f'b={b}')
+
+
+#mostrar o grafico comparativo
+import matplotlib.pyplot as plt
+plt.scatter(X, y)
+plt.plot(X, previsão, color='red')
+plt.grid(True)
+plt.xlabel('Horas de Estudo')
+plt.ylabel('Nota')
+plt.title('Comparativo Horas de Estudo x Notal | SEQ = {seq:.3f}')
+plt.legend(['Observado', f'y={a:.3f}+b:3f])X'])
+plt.show()
