@@ -1,0 +1,30 @@
+import pandas as pd
+df=pd.read_excel("dados_frutas.xlsx")
+df
+
+y=df['Fruta']
+entradas=['Arredondada', 'Suculenta',	'Vermelha',	'Doce']
+X= df [entradas]
+X
+
+#criação e treino de modelo:
+from sklearn.tree import DecisionTreeClassifier
+modelo=DecisionTreeClassifier(random_state=42)
+modelo.fit(X,y)
+
+#uso do modelo para fazer predição(simulação):
+#Arredondada Suculenta Vermelha Doce
+modelo.predict([[0,0,0,0 ]])
+
+modelo.predict([[1,1,1,1 ]])
+
+#arvore
+import matplotlib.pyplot as plt
+from sklearn import tree
+plt.figure(figsize=(4,4), dpi=300)
+tree.plot_tree(modelo, feature_names=entradas, class_names=modelo.classes_,filled=True)
+plt.show()
+
+#exibir probabilidade
+proba=modelo.predict_proba([[1,1,1,1]])[0]
+pd.Series(proba, index=modelo.classes_)
