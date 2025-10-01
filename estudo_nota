@@ -26,5 +26,30 @@ plt.grid(True)
 plt.xlabel('Horas de Estudo')
 plt.ylabel('Nota')
 plt.title('Comparativo Horas de Estudo x Notal | SEQ = {seq:.3f}')
+
+
+# criação do modelo com àrvore de decissão regressora
+from sklearn.tree import DecisionTreeRegressor
+modelo2 = DecisionTreeRegressor(random_state=42,
+                               max_depth=3)
+modelo2.fit(X, y)
+#previsão usando AD:
+previsao2 = modelo2.predict(X)
+#Cálculo da soma dos erros quadraticos (SEQ):
+import numpy as np
+seq2 = np.sum((df['nota'] - previsao2)**2)
+print(f'seq2 = {seq2}')
 plt.legend(['Observado', f'y={a:.3f}+b:3f])X'])
+plt.show()
+
+#mostrar o grafico comparativo
+import matplotlib.pyplot as plt
+plt.scatter(X, y)
+plt.plot(X, previsão, color='red')
+plt.plot(X, previsao2, color='green')
+plt.grid(True)
+plt.xlabel('Horas de Estudo')
+plt.ylabel('Nota')
+plt.title('Comparativo Horas de Estudo x Nota')
+plt.legend(['Observado', f'Linear Regression | SEQ = {SEQ:.3f}', f'Decision Tree Regression | SEQ = {seq2:.3f}'])
 plt.show()
