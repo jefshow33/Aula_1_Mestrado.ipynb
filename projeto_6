@@ -1,0 +1,98 @@
+#importação de dados
+import pandas as pd
+df=pd.read_excel("dados_fluidos_v2.xlsx")
+df
+
+#remover coluna "id".
+df=df.drop("id",axis=1)
+df
+
+#informações dataframe:
+df.info()
+
+#analisar a estatistica descritiva dos dados:
+df.describe()
+
+#substituição textos para números:
+df=df.replace({'cosmético':1,'alimentício':2,'industrial':3,'newtoniano':1,'nao-newtoniano':0})
+df
+
+#convertendo a coluna "tipo_produto" em tres outras
+#(one hot encoding):
+df=pd.get_dummies(df,columns=['tipo_produto'])
+df
+df=df.replace({
+    True:1, False:0
+})
+df
+#clicar em "executar tudo"
+
+#separar dados de treino (70%) e teste (30%) de forma estratificada:
+from sklearn.model_selection import train_test_split
+X=df.drop(columns=['classe'])
+y=df['classe']
+X_treino, X_teste,y_treino,y_teste= train_test_split(X,y, random_state=42, test_size=0.3,stratify=y)
+
+#atestando a estratificação:
+print(f'Media de treino: {y_treino.mean()}')
+print(f'Media de teste: {y_teste.mean()}')
+print(y_teste.value_counts())
+
+#criação dos modelos de classificação:
+from sklearn import linear_model
+from sklearn import naive_bayes
+from sklearn import tree
+from sklearn import ensemble
+
+# Increasing max_iter for Logistic Regression to help with convergence
+modelo_rl = linear_model.LogisticRegression(penalty=None, fit_intercept=True, max_iter=1000)
+modelo_nb= naive_bayes.GaussianNB()
+modelo_ad= tree.DecisionTreeClassifier(random_state=42, max_depth=5)
+modelo_rf= ensemble.RandomForestClassifier(random_state=42, max_depth=5)
+
+#treino dos modelos:
+modelo_rl.fit(X_treino, y_treino)
+modelo_nb.fit(X_treino, y_treino)
+modelo_ad.fit(X_treino, y_treino)
+modelo_rf.fit(X_treino, y_treino)
+
+
+from sklearn.metrics import roc_curve, auc
+
+# Calculate ROC curve and AUC for each model
+y_pred_rl = modelo_rl.predict_proba(X_teste)[:, 1]
+roc_rl = roc_curve(y_teste, y_pred_rl)
+auc_rl = auc(roc_rl[0], roc_rl[1])
+
+y_pred_nb = modelo_nb.predict_proba(X_teste)[:, 1]
+roc_nb = roc_curve(y_teste, y_pred_nb)
+auc_nb = auc(roc_nb[0], roc_nb[1])
+
+y_pred_ad = modelo_ad.predict_proba(X_teste)[:, 1]
+roc_ad = roc_curve(y_teste, y_pred_ad)
+auc_ad = auc(roc_ad[0], roc_ad[1])
+
+y_pred_rf = modelo_rf.predict_proba(X_teste)[:, 1]
+roc_rf = roc_curve(y_teste, y_pred_rf)
+auc_rf = auc(roc_rf[0], roc_rf[1])
+
+
+# Plotando curva ROC
+import matplotlib.pyplot as plt
+
+plt.figure(dpi=150)
+plt.plot(roc_rl[0], roc_rl[1], "o-")
+plt.plot(roc_nb[0], roc_nb[1], "o-")
+plt.plot(roc_ad[0], roc_ad[1], "o-")
+plt.plot(roc_rf[0], roc_rf[1], "o-")
+plt.plot([0,1], [0,1], "k--")
+plt.xlabel("1 - Especificidade")
+plt.ylabel("Recall (Sensibilidade)")
+plt.legend([f"Regressão Logística ({auc_rl:.2f})",
+            f"Naive Bayes ({auc_nb:.2f})",
+            f"Árvore de Decisão ({auc_ad:.2f})",
+            f"Random Forest ({auc_rf:.2f})"
+           ])
+
+plt.grid(True)
+plt.show()
