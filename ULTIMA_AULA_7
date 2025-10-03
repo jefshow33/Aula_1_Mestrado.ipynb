@@ -1,0 +1,114 @@
+#projeto_7
+#importação de dados
+import pandas as pd
+df=pd.read_csv('admission_dataset.csv')
+df
+#verificar dados faltantes e outras informações:
+df.info()
+#analise estatistica descritiva:
+df.describe()
+#separar entrada e saida do modelo:
+x=df.drop('Chance of Admit',axis=1)
+y=df['Chance of Admit']
+#separar em treino e teste:
+from sklearn.model_selection import train_test_split
+x_treino,x_teste,y_treino,y_teste=train_test_split(x,y,test_size=0.3,random_state=42)
+
+#confirmando a estratificação:
+print(f'Média de treino: {y_treino.mean()}')
+print(f'Média de teste: {y_teste.mean()}')
+from ast import mod
+#criação dos modelos:
+from sklearn import linear_model
+from sklearn import tree
+from sklearn  import ensemble
+modelo_rl=linear_model.LinearRegression()
+modelo_ad=tree.DecisionTreeRegressor()
+modelo_rf=ensemble.RandomForestRegressor()
+#treino do modelo:
+modelo_rl.fit(X_treino,y_treino)
+modelo_ad.fit(X_treino,y_treino)
+#previsao treino e de teste:
+previsao_rl_treino=modelo_rl.predict(x_treino)
+previsao_ad_treino=modelo_ad.predict(x_treino)
+previsao_rf_treino=modelo_rf.predict(x_treino)
+
+previsao_rl_teste=modelo_rl.predict(x_teste)
+previsao_ad_teste=modelo_ad.predict(x_teste)
+previsao_rf_teste=modelo_rf.predict(x_teste)
+
+calculo see
+import numpy as np
+seq_treino_rl=np.sum((y_treino-previsao_rl_treino)**2)
+seq_treino_ad=np.sum((y_treino-previsao_ad_treino)**2)
+seq_treino_rf=np.sum((y_treino-previsao_rf_treino)**2)
+
+seq_teste_rl=np.sum((y_teste-previsao_rl_teste)**2)
+seq_teste_ad=np.sum((y_teste-previsao_ad_teste)**2)
+seq_teste_rf=np.sum((y_teste-previsao_rf_teste)**2)
+
+#MSE
+from sklearn import metrics
+mse_rl_treino=metrics.mean_squared_error(y_treino,previsao_rl_treino)
+mse_ad_treino=metrics.mean_squared_error(y_treino,previsao_ad_treino)
+mse_rf_treino=metrics.mean_squared_error(y_treino,previsao_rf_treino)
+
+mse_rl_teste=metrics.mean_squared_error(y_teste,previsao_rl_teste)
+mse_ad_teste=metrics.mean_squared_error(y_teste,previsao_ad_teste)
+mse_rf_teste=metrics.mean_squared_error(y_teste,previsao_rf_teste)
+
+
+#tabela com os valores de see e mse calculado
+results = {
+    'Model': ['Linear Regression', 'Decision Tree', 'Random Forest'],
+    'SSE Treino': [seq_treino_rl, seq_treino_ad, seq_treino_rf],
+    'MSE Treino': [mse_rl_treino, mse_ad_treino, mse_rf_treino],
+    'SSE Teste': [seq_teste_rl, seq_teste_ad, seq_teste_rf],
+    'MSE Teste': [mse_rl_teste, mse_ad_teste, mse_rf_teste]
+}
+
+results_df = pd.DataFrame(results)
+display(results_df)
+
+import matplotlib.pyplot as plt
+import pandas as pd
+
+# Prepare data for plotting
+mse_plot_data = results_df[['Model', 'MSE Treino', 'MSE Teste']].melt(
+    id_vars='Model', var_name='Dataset', value_name='MSE'
+)
+
+# Create the bar plot
+plt.figure(figsize=(10, 6))
+import seaborn as sns
+sns.barplot(data=mse_plot_data, x='Model', y='MSE', hue='Dataset')
+plt.title('Mean Squared Error (MSE) for Different Models')
+plt.ylabel('MSE')
+plt.xlabel('Model')
+plt.show()
+
+
+import matplotlib.pyplot as plt
+import pandas as pd
+
+# Prepare data for plotting
+sse_plot_data = results_df[['Model', 'SSE Treino', 'SSE Teste']].melt(
+    id_vars='Model', var_name='Dataset', value_name='SSE'
+)
+
+# Create the bar plot
+plt.figure(figsize=(10, 6))
+import seaborn as sns
+sns.barplot(data=sse_plot_data, x='Model', y='SSE', hue='Dataset')
+plt.title('Sum of Squared Errors (SSE) for Different Models')
+plt.ylabel('SSE')
+plt.xlabel('Model')
+plt.show()
+
+
+
+
+
+
+
+modelo_rf.fit(X_treino,y_treino)
